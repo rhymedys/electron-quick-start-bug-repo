@@ -1,13 +1,18 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow,ipcMain} = require('electron')
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({
+    width: 800, 
+    height: 600,
+    transparent:true 
+  })
 
   // and load the index.html of the app.
   mainWindow.loadFile('index.html')
@@ -22,7 +27,21 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+
 }
+ipcMain.on('maximize-or-unmaximize-main-window',function(){
+  if(mainWindow){
+    if( mainWindow.isMaximized()){
+      mainWindow.unmaximize()
+    }else {
+      mainWindow.maximize()
+      const res =mainWindow.isMaximized()
+      // when the mainWindow add 'transparent:true' to construct , i expect the result of res is true , but in reality it return false
+      console.log('mainWindow.isMaximized:',res) 
+    }
+
+  }
+})
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
